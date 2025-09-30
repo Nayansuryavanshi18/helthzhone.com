@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HelthZhone</title>
+  <style>
+
+
+    :root{
+      --accent:#2b9edb;
+      --muted:#6b6b6b;
+      --bg:#f6fbff;
+      --card:#92d6f1;
+      --danger:#e04b4b;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      background: linear-gradient(180deg,#060606, #050505);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      color:#111;
+    }
+
+    /* Container */
+    .app {
+      width:100%;
+      max-width:420px;
+      background:var(--card);
+      border-radius:16px;
+      box-shadow: 0 8px 30px rgba(18,40,80,0.08);
+      overflow:hidden;
+    }
+
+    /* Header / banner for login */
+    .banner {
+      height:180px;
+      background: url('b1.jpg') center/cover no-repeat;
+      display:flex;
+      align-items:flex-end;
+      padding:16px;
+      color:#fff;
+    }
+    .banner h1{
+  margin:auto;
+  font-size: 29px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  color: #fff;
+ }
+
+    .logo {
+      position: absolute;
+      width:50px; /* adjust as needed */
+      height:auto;
+      border-top-right-radius: 50px;
+      border-top-left-radius: 50px;
+      border-bottom-right-radius: 50px;
+      border-bottom-left-radius: 50px;
+      overflow: hidden;
+    }
+
+    .content {
+      padding:18px;
+    }
+
+    .field { margin-bottom:12px; }
+    label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+    input[type="text"], input[type="password"], input[type="time"], input[type="email"], select {
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #e3e7ee;
+      font-size:14px;
+      background:#fff;
+    }
+
+    .btn {
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:10px;
+      border:none;
+      background:var(--accent);
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+      text-align:center;
+    }
+    .btn.ghost {
+      background:transparent;
+      color:var(--accent);
+      border:1px solid var(--accent);
+    }
+    .btn.danger { background:var(--danger); }
+
+    .row { display:flex; gap:8px; }
+    .center { text-align:center; }
+
+    /* List (HelthZhone main) */
+    .list { display:flex; flex-direction:column; gap:10px; }
+    .list button {
+      padding:14px 12px;
+      border-radius:10px;
+      border:1px solid #eef4fb;
+      background:linear-gradient(180deg,#fff,#f7fbff);
+      text-align:left;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    /* Card for reminders list & doctor info */
+    .card {
+      background:#fbfeff;
+      border-radius:12px;
+      padding:12px;
+      border:1px solid #eef6fb;
+      margin-bottom:12px;
+    }
+
+    .small { font-size:13px; color:var(--muted); }
+    .muted { color:var(--muted); }
+
+    .reminder-item {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:8px 6px;
+      border-bottom:1px dashed #eef4fb;
+    }
+    .reminder-item:last-child { border-bottom:none; }
+
+    .link { color:var(--accent); text-decoration:none; font-weight:600; }
+
+    footer { padding:12px; text-align:center; font-size:13px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- LOGIN / REGISTER -->
+    <div id="page-login" class="page">
+      <div class="banner">
+
+        <img src="NS2.png" alt="HealthZone Logo" class="logo">
+        <h1>HelthZhone</h1>
+
+      </div>
+      <div class="content">
+        <div id="login-form">
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input id="login-email" type="email" placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input id="login-password" type="password" placeholder="password" />
+          </div>
+          <div class="row" style="justify-content:space-between;align-items:center">
+            <button class="btn" id="btn-login">Log In</button>
+            <button class="btn ghost" id="btn-open-register">Register</button>
+          </div>
+          <p class="small muted" style="margin-top:12px">Use Register to create an account. This demo stores account info locally in your browser (localStorage).</p>
+        </div>
+
+        <div id="register-form" style="display:none;">
+          <div class="field">
+            <label for="reg-name">Full name</label>
+            <input id="reg-name" type="text" placeholder="Your name" />
+          </div>
+          <div class="field">
+            <label for="reg-email">Email</label>
+            <input id="reg-email" type="email" placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="reg-pass">Password</label>
+            <input id="reg-pass" type="password" placeholder="choose a password" />
+          </div>
+          <div class="row">
+            <button class="btn" id="btn-register">Create account</button>
+            <button class="btn ghost" id="btn-cancel-register">Back</button>
+          </div>
+        </div>
+      </div>
+      <footer>HelthZhone — simple medicine reminders & doctor info</footer>
+    </div>
+
+    <!-- HELTHZHONE LIST -->
+    <div id="page-list" class="page" style="display:none;">
+      <div class="banner" style="background: url('b2.jpg') center/cover no-repeat;">
+        <h1>HelthZhone</h1>
+      </div>
+      <div class="content">
+        <div class="card center">
+          <div id="welcomeText">Welcome!</div>
+          <div class="small muted" id="userEmail"></div>
+        </div>
+
+        <div class="list">
+          <button id="btn-open-reminder">➕ Add Reminder</button>
+          <button id="btn-open-doctor">🩺 Doctors</button>
+          <button id="btn-logout" style="background:linear-gradient(180deg,#fff,#fff);border:1px solid #feecec;color:var(--danger);">Logout</button>
+        </div>
+
+      </div>
+      <footer><small class="muted">Tap an option above.</small></footer>
+    </div>
+
+    <!-- REMINDER PAGE -->
+    <div id="page-reminder" class="page" style="display:none;">
+      <div class="banner" style="background: url('b4.jpg') center/cover no-repeat;">
+        <h1>Add Reminder</h1>
+      </div>
+      <div class="content">
+        <div class="field">
+          <label for="med-name">Medicine name</label>
+          <input id="med-name" type="text" placeholder="e.g., Paracetamol 500mg" />
+        </div>
+        <div class="field">
+          <label for="med-time">Time</label>
+          <input id="med-time" type="time" />
+        </div>
+        <div class="field">
+          <label>Alarm</label>
+          <div class="row">
+            <select id="alarm-toggle">
+              <option value="on">Alarm: On</option>
+              <option value="off">Alarm: Off</option>
+            </select>
+            <button class="btn" id="btn-set-alarm">Set</button>
+          </div>
+          <p class="small muted" style="margin-top:8px">Alarm works while this page/tab is open. Notifications require permission.</p>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>Saved reminders</strong>
+            <button class="btn ghost" id="btn-clear-reminders">Clear</button>
+          </div>
+          <div id="reminders-list" style="margin-top:10px"></div>
+        </div>
+
+        <div style="margin-top:12px" class="row">
+          <button class="btn" id="btn-back-to-list-from-reminder">Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCTOR INFO PAGE -->
+    <div id="page-doctor" class="page" style="display:none;">
+      <div class="banner" style="background: url('b3.jpg') center/cover no-repeat;">
+        <h1>Doctor Information</h1>
+      </div>
+      <div class="content">
+        <div class="card">
+          <strong>Family Physicians</strong>
+          <p class="small muted">General practitioners for routine care.</p>
+        </div>
+
+        <div class="card">
+          <strong>Specialists</strong>
+          <p class="small muted">Cardiologists, Surgeons, Dentists, etc. Tap the link below to find nearby doctors or hospitals.</p>
+        </div>
+
+        <div class="card center">
+          <a id="nearby-link" class="link" href="#" target="_blank">Find nearby doctors & hospitals</a>
+        </div>
+
+        <div style="margin-top:12px" class="row">
+          <button class="btn" id="btn-back-to-list-from-doctor">Back</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /***********************
+     * Simple SPA behavior
+     ***********************/
+    const pages = {
+      login: document.getElementById('page-login'),
+      list: document.getElementById('page-list'),
+      reminder: document.getElementById('page-reminder'),
+      doctor: document.getElementById('page-doctor')
+    };
+
+    const show = (name) => {
+      Object.values(pages).forEach(p => p.style.display = 'none');
+      pages[name].style.display = '';
+      currentPage = name;
+    };
+
+    // --- Auth (stored in localStorage) ---
+    function getUsers() {
+      try { return JSON.parse(localStorage.getItem('hz_users')||'[]'); } catch(e){return [];}
+    }
+    function saveUsers(users) { localStorage.setItem('hz_users', JSON.stringify(users)); }
+
+    function getCurrentUser() {
+      try { return JSON.parse(localStorage.getItem('hz_current')||'null'); } catch(e){return null;}
+    }
+    function setCurrentUser(u) { localStorage.setItem('hz_current', JSON.stringify(u)); }
+    function clearCurrentUser() { localStorage.removeItem('hz_current'); }
+
+    // --- Reminders storage keyed by user email ---
+    function getRemindersFor(email) {
+      try { const all = JSON.parse(localStorage.getItem('hz_reminders')||'{}'); return all[email]||[]; } catch(e){ return []; }
+    }
+    function saveRemindersFor(email, arr) {
+      const all = JSON.parse(localStorage.getItem('hz_reminders')||'{}');
+      all[email] = arr;
+      localStorage.setItem('hz_reminders', JSON.stringify(all));
+    }
+
+    // DOM elements
+    const btnOpenRegister = document.getElementById('btn-open-register');
+    const registerForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
+    const btnCancelRegister = document.getElementById('btn-cancel-register');
+    const btnRegister = document.getElementById('btn-register');
+    const btnLogin = document.getElementById('btn-login');
+
+    const btnOpenReminder = document.getElementById('btn-open-reminder');
+    const btnOpenDoctor = document.getElementById('btn-open-doctor');
+    const btnLogout = document.getElementById('btn-logout');
+    const userEmailEl = document.getElementById('userEmail');
+    const welcomeText = document.getElementById('welcomeText');
+
+    const medNameInput = document.getElementById('med-name');
+    const medTimeInput = document.getElementById('med-time');
+    const alarmToggle = document.getElementById('alarm-toggle');
+    const btnSetAlarm = document.getElementById('btn-set-alarm');
+    const remindersListEl = document.getElementById('reminders-list');
+    const btnClearReminders = document.getElementById('btn-clear-reminders');
+    const btnBackToListFromReminder = document.getElementById('btn-back-to-list-from-reminder');
+
+    const nearbyLink = document.getElementById('nearby-link');
+    const btnBackToListFromDoctor = document.getElementById('btn-back-to-list-from-doctor');
+
+    // page state
+    let currentPage = 'login';
+    let alarmTimers = []; // store active timeouts for page session
+
+    // Init
+    (function init() {
+      // Set nearby link (Google Maps search for hospitals/doctors near me).
+      // Use geo if allowed, otherwise default to generic search.
+      nearbyLink.addEventListener('click', function(e){
+        e.preventDefault();
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(pos => {
+            const lat = pos.coords.latitude.toFixed(6);
+            const lon = pos.coords.longitude.toFixed(6);
+            const maps = `https://www.google.com/maps/search/hospitals+or+doctors/@${lat},${lon},13z`;
+            window.open(maps, '_blank');
+          }, () => {
+            window.open('https://www.google.com/maps/search/hospitals+near+me', '_blank');
+          });
+        } else {
+          window.open('https://www.google.com/maps/search/hospitals+near+me', '_blank');
+        }
+      });
+
+      // Show login or list depending on session
+      const cur = getCurrentUser();
+      if (cur) {
+        showListFor(cur);
+      } else {
+        show('login');
+      }
+
+      // events
+      btnOpenRegister.addEventListener('click', () => {
+        loginForm.style.display = 'none';
+        registerForm.style.display = '';
+      });
+      btnCancelRegister.addEventListener('click', () => {
+        registerForm.style.display = 'none';
+        loginForm.style.display = '';
+      });
+
+      btnRegister.addEventListener('click', () => {
+        const name = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim().toLowerCase();
+        const pass = document.getElementById('reg-pass').value;
+        if (!name || !email || !pass) return alert('Please fill all fields.');
+        const users = getUsers();
+        if (users.find(u=>u.email===email)) return alert('Account with this email already exists.');
+        users.push({name, email, pass});
+        saveUsers(users);
+        alert('Account created. You can now log in.');
+        registerForm.style.display = 'none';
+        loginForm.style.display = '';
+      });
+
+      btnLogin.addEventListener('click', () => {
+        const email = document.getElementById('login-email').value.trim().toLowerCase();
+        const pass = document.getElementById('login-password').value;
+        if (!email || !pass) return alert('Enter email and password.');
+        const users = getUsers();
+        const found = users.find(u=>u.email===email && u.pass===pass);
+        if (!found) return alert('Invalid credentials.');
+        setCurrentUser({name: found.name, email: found.email});
+        showListFor(found);
+      });
+
+      btnOpenReminder.addEventListener('click', () => {
+        renderReminders();
+        show('reminder');
+      });
+
+      btnOpenDoctor.addEventListener('click', () => {
+        show('doctor');
+      });
+
+      btnLogout.addEventListener('click', () => {
+        clearCurrentUser();
+        // clear timers
+        clearAlarms();
+        show('login');
+      });
+
+      btnSetAlarm.addEventListener('click', () => {
+        const name = medNameInput.value.trim();
+        const time = medTimeInput.value;
+        const alarm = alarmToggle.value === 'on';
+        if (!name || !time) return alert('Enter medicine name and time.');
+        const cur = getCurrentUser();
+        if (!cur) return alert('User not logged in.');
+        const rems = getRemindersFor(cur.email);
+        rems.push({name, time, alarm});
+        saveRemindersFor(cur.email, rems);
+        renderReminders();
+        medNameInput.value = '';
+        medTimeInput.value = '';
+        alert('Reminder saved.');
+        scheduleAlarmsForUser(); // schedule any active alarms in this session
+      });
+
+      btnClearReminders.addEventListener('click', () => {
+        const cur = getCurrentUser();
+        if (!cur) return;
+        if (!confirm('Clear all reminders?')) return;
+        saveRemindersFor(cur.email, []);
+        renderReminders();
+        clearAlarms();
+      });
+
+      btnBackToListFromReminder.addEventListener('click', () => {
+        showListFor(getCurrentUser());
+      });
+
+      btnBackToListFromDoctor.addEventListener('click', () => {
+        showListFor(getCurrentUser());
+      });
+
+      // When page loads, ask for notification permission (optional)
+      if ('Notification' in window) {
+        if (Notification.permission === 'default') {
+          try { Notification.requestPermission(); } catch(e) {}
+        }
+      }
+
+      // When user returns to the list, re-schedule alarms
+      window.addEventListener('visibilitychange', () => {
+        if (!document.hidden) scheduleAlarmsForUser();
+      });
+    })();
+
+    function showListFor(user) {
+      show('list');
+      userEmailEl.textContent = user.email || '';
+      welcomeText.textContent = `Hi, ${user.name || 'User'}`;
+      // schedule alarms for that user while page open
+      scheduleAlarmsForUser();
+    }
+
+    function renderReminders() {
+      const cur = getCurrentUser();
+      if (!cur) { remindersListEl.innerHTML = '<div class="small muted">No user logged in.</div>'; return; }
+      const rems = getRemindersFor(cur.email);
+      if (!rems.length) {
+        remindersListEl.innerHTML = '<div class="small muted">No reminders yet.</div>';
+        return;
+      }
+      remindersListEl.innerHTML = '';
+      rems.forEach((r, idx) => {
+        const div = document.createElement('div');
+        div.className = 'reminder-item';
+        const left = document.createElement('div');
+        left.innerHTML = `<div><strong>${escapeHtml(r.name)}</strong></div><div class="small muted">${r.time} • ${r.alarm? 'Alarm on' : 'Alarm off'}</div>`;
+        const right = document.createElement('div');
+        const del = document.createElement('button');
+        del.className = 'btn ghost';
+        del.textContent = 'Delete';
+        del.addEventListener('click', () => {
+          if (!confirm('Delete this reminder?')) return;
+          const rems2 = getRemindersFor(cur.email);
+          rems2.splice(idx,1);
+          saveRemindersFor(cur.email, rems2);
+          renderReminders();
+          scheduleAlarmsForUser();
+        });
+        right.appendChild(del);
+        div.appendChild(left);
+        div.appendChild(right);
+        remindersListEl.appendChild(div);
+      });
+    }
+
+    // Alarm scheduling: will only work while page is open
+    function scheduleAlarmsForUser() {
+      clearAlarms();
+      const cur = getCurrentUser();
+      if (!cur) return;
+      const rems = getRemindersFor(cur.email) || [];
+      const now = new Date();
+      rems.forEach(r => {
+        if (!r.alarm) return;
+        // parse time HH:MM
+        const parts = r.time.split(':');
+        if (parts.length < 2) return;
+        const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+        let diff = target.getTime() - now.getTime();
+        if (diff < 0) {
+          // if time already passed today, schedule for tomorrow
+          diff += 24*60*60*1000;
+        }
+        // only set timers that are reasonably within next 24h
+        if (diff > 0 && diff <= 24*60*60*1000) {
+          const t = setTimeout(() => {
+            triggerAlarm(r);
+          }, diff);
+          alarmTimers.push(t);
+        }
+      });
+    }
+
+    function clearAlarms() {
+      alarmTimers.forEach(t => clearTimeout(t));
+      alarmTimers = [];
+    }
+
+    function triggerAlarm(reminder) {
+      const txt = `Medicine: ${reminder.name} — Time: ${reminder.time}`;
+      // show notification if permission
+      if (window.Notification && Notification.permission === 'granted') {
+        try {
+          new Notification('HelthZhone Reminder', { body: txt });
+        } catch(e) { alert(txt); }
+      } else {
+        alert(txt);
+      }
+      // play beep (short)
+      beep();
+      // after triggering, reschedule remaining alarms (if any)
+      scheduleAlarmsForUser();
+    }
+
+    function beep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = 880;
+        o.connect(g);
+        g.connect(ctx.destination);
+        g.gain.value = 0.05;
+        o.start();
+        setTimeout(()=>{ o.stop(); ctx.close(); }, 500);
+      } catch(e) {
+        // fallback: short alert (no sound)
+        // alert('Reminder!');
+      }
+    }
+
+    // small utility
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; });
+    }
+
+    // when user navigates away or reloads, keep timers cleared
+    window.addEventListener('beforeunload', () => clearAlarms());
+
+  </script>
+</body>
+</html>
