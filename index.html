@@ -561,22 +561,33 @@
     }
 
     function beep() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = 'sine';
-        o.frequency.value = 880;
-        o.connect(g);
-        g.connect(ctx.destination);
-        g.gain.value = 0.05;
-        o.start();
-        setTimeout(()=>{ o.stop(); ctx.close(); }, 500);
-      } catch(e) {
-        // fallback: short alert (no sound)
-        // alert('Reminder!');
-      }
-    }
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+
+    o.type = 'square'; // louder, harsher than sine
+    o.frequency.setValueAtTime(1000, ctx.currentTime); // start frequency
+
+    o.connect(g);
+    g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.10, ctx.currentTime); // louder volume
+
+    o.start();
+
+    // Optional: oscillate frequency for attention
+    o.frequency.linearRampToValueAtTime(800, ctx.currentTime + 2.5);
+    o.frequency.linearRampToValueAtTime(1000, ctx.currentTime + 5);
+
+    setTimeout(() => {
+      o.stop();
+      ctx.close();
+    }, 10000); // 10 seconds
+  } catch(e) {
+    alert('Reminder!');
+  }
+}
+
 
     // small utility
     function escapeHtml(s){
@@ -589,4 +600,3 @@
   </script>
 </body>
 </html>
-
